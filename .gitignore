@@ -34,4 +34,4 @@ build/
 /.mvn/wrapper/MavenWrapperDownloader.java
 /mvnw
 /mvnw.cmd
-/log/application.log
+/log/
