@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
+<databaseChangeLog objectQuotingStrategy="QUOTE_ALL_OBJECTS"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="Ilya" id="CREATE_TABLE_USER_AND_USER_ROLES_ADD_FK">
-        <createTable tableName="User">
-            <column autoIncrement="true" name="id" type="INT">
-                <constraints primaryKey="true" primaryKeyName="UserPK"/>
+        <createTable tableName="USER">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="USERPK"/>
             </column>
-            <column name="email" type="VARCHAR(255)">
+            <column name="EMAIL" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(255)"/>
-            <column name="username" type="VARCHAR(255)">
+            <column name="PASSWORD" type="VARCHAR(255)"/>
+            <column name="USERNAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <createTable tableName="User_roles">
-            <column name="User_id" type="INT">
+        <createTable tableName="USER_ROLE">
+            <column name="USER_ID" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="roles" type="INT"/>
+            <column name="ROLES" type="VARCHAR(255)"/>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="User_id" baseTableName="User_roles"
-                                 constraintName="FKi81fp6mx433heb7dvbxqaqvpv" deferrable="false"
-                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="User"/>
-        <addUniqueConstraint columnNames="email" constraintName="UC_USEREMAIL_COL" tableName="User"/>
-        <addUniqueConstraint columnNames="username" constraintName="UC_USERUSERNAME_COL" tableName="User"/>
+        <addUniqueConstraint columnNames="EMAIL" constraintName="UC_USEREMAIL_COL" tableName="USER"/>
+        <addUniqueConstraint columnNames="USERNAME" constraintName="UC_USERUSERNAME_COL" tableName="USER"/>
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="USER_ROLE"
+                                 constraintName="FK_USER_ROLE_USER" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="USER"/>
+        <modifySql>
+            <replace replace="" with=""/>
+        </modifySql>
     </changeSet>
 
 </databaseChangeLog>
