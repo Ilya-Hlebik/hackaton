@@ -1,4 +1,4 @@
-package com.web.assistant.model;
+package com.web.assistant.dbo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

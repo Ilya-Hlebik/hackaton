@@ -1,6 +1,6 @@
 package com.web.assistant.dto;
 
-import com.web.assistant.model.Role;
+import com.web.assistant.dbo.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,8 +11,8 @@ import java.util.List;
 public class UserResponseDTO {
 
     @ApiModelProperty(position = 3)
-    List<Role> roles;
-    @ApiModelProperty(position = 0)
+    private List<Role> roles;
+    @ApiModelProperty
     private Integer id;
     @ApiModelProperty(position = 1)
     private String username;

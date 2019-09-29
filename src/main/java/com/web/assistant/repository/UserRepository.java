@@ -1,6 +1,6 @@
 package com.web.assistant.repository;
 
-import com.web.assistant.model.User;
+import com.web.assistant.dbo.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.transaction.Transactional;
