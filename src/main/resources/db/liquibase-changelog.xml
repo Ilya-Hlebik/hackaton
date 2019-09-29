@@ -7,7 +7,7 @@
 
     <changeSet author="Ilya" id="CREATE_TABLE_USER_AND_USER_ROLES_ADD_FK">
         <createTable tableName="USER">
-            <column autoIncrement="true" name="ID" type="INT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="USERPK"/>
             </column>
             <column name="EMAIL" type="VARCHAR(255)">
@@ -19,7 +19,7 @@
             </column>
         </createTable>
         <createTable tableName="USER_ROLE">
-            <column name="USER_ID" type="INT">
+            <column name="USER_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="ROLES" type="VARCHAR(255)"/>
@@ -29,6 +29,25 @@
         <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="USER_ROLE"
                                  constraintName="FK_USER_ROLE_USER" deferrable="false"
                                  initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="USER"/>
+    </changeSet>
+    <changeSet author="Ilya" id="CREATE_WORKER_TABLE">
+        <createTable tableName="WORKER">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="WORKERPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sureName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

@@ -1,4 +1,4 @@
-package com.web.assistant.dbo;
+package com.web.assistant.enumerated;
 
 import org.springframework.security.core.GrantedAuthority;
 

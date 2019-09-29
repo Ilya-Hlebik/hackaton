@@ -1,22 +1,19 @@
 package com.web.assistant.dbo;
 
+import com.web.assistant.enumerated.Role;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.List;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name = "USER")
 @Data
-public class User {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+@EqualsAndHashCode(callSuper = true)
+public class User extends AbstractEntity{
 
   @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
   @Column(unique = true, nullable = false)
@@ -35,3 +32,4 @@ public class User {
   @ToString.Exclude
   List<Role> roles;
 }
+

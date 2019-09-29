@@ -1,7 +1,7 @@
 package com.web.assistant.security;
 
 import com.web.assistant.exception.CustomException;
-import com.web.assistant.dbo.Role;
+import com.web.assistant.enumerated.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
