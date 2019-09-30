@@ -1,5 +1,6 @@
 package com.web.assistant.dto;
 
+import com.web.assistant.dbo.Worker;
 import com.web.assistant.enumerated.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -16,5 +17,5 @@ public class UserResponseDTO extends AbstractDto {
     private String username;
     @ApiModelProperty(position = 2)
     private String email;
-
+    private Worker worker;
 }
