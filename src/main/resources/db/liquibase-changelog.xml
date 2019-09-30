@@ -49,5 +49,16 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="ADD_FK_BETWEEN_WORKER_AND_USER" author="Ilya">
+        <addColumn tableName="WORKER">
+            <column name="USER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addUniqueConstraint columnNames="USER_ID" constraintName="UK_WORKER_USER_ID" tableName="WORKER"/>
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="WORKER"
+                                 constraintName="FK_WORKER_USER" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="USER"/>
+    </changeSet>
 
 </databaseChangeLog>

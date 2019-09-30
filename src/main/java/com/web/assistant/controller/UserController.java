@@ -1,7 +1,7 @@
 package com.web.assistant.controller;
 
-import com.web.assistant.dto.UserDataDTO;
-import com.web.assistant.dto.UserResponseDTO;
+import com.web.assistant.dto.request.UserRequestDTO;
+import com.web.assistant.dto.response.UserResponseDTO;
 import com.web.assistant.dbo.User;
 import com.web.assistant.service.UserService;
 import io.swagger.annotations.*;
@@ -39,7 +39,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
-    public String signUp(@ApiParam("Signup User") @RequestBody final UserDataDTO user) {
+    public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user) {
         return userService.signup(modelMapper.map(user, User.class));
     }
 

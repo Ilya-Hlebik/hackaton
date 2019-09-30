@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AbstractDto {
+public class AbstractResponseDTO {
     @ApiModelProperty
     private Long id;
 }

@@ -1,21 +1,24 @@
-package com.web.assistant.dto;
+package com.web.assistant.dto.request;
 
-import com.web.assistant.dbo.Worker;
+
+import com.web.assistant.dto.AbstractRequestDTO;
 import com.web.assistant.enumerated.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+
 @Getter
 @Setter
-public class UserResponseDTO extends AbstractDto {
+public class UserRequestDTO extends AbstractRequestDTO {
 
     @ApiModelProperty(position = 3)
     private List<Role> roles;
-    @ApiModelProperty(position = 1)
+    @ApiModelProperty
     private String username;
-    @ApiModelProperty(position = 2)
+    @ApiModelProperty(position = 1)
     private String email;
-    private Worker worker;
+    @ApiModelProperty(position = 2)
+    private String password;
 }
