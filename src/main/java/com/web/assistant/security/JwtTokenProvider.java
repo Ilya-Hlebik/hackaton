@@ -1,7 +1,7 @@
 package com.web.assistant.security;
 
-import com.web.assistant.exception.CustomException;
 import com.web.assistant.enumerated.Role;
+import com.web.assistant.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,10 +15,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,20 +43,23 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(final String username, final List<Role> roles) {
+    public String createToken(final String username, final List<Role> roles, final HttpServletResponse httpServletResponse) {
 
         final Claims claims = Jwts.claims().setSubject(username);
         claims.put("auth", roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()));
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
-
-        return Jwts.builder()
+        final String JWT = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
+        final Cookie cookie = new Cookie("token", JWT);
+        cookie.setPath("/assistant");
+        httpServletResponse.addCookie(cookie);
+        return JWT;
     }
 
     public Authentication getAuthentication(final String token) {
@@ -69,11 +72,10 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(final HttpServletRequest req) {
-        final String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        if (req.getCookies() == null)
+            return null;
+        final Optional<String> token = Arrays.stream(req.getCookies()).filter(e -> e.getName().equals("token")).map(Cookie::getValue).findFirst();
+        return token.orElse(null);
     }
 
     public boolean validateToken(final String token) {

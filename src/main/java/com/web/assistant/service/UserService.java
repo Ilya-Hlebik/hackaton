@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 @AllArgsConstructor
@@ -26,20 +27,20 @@ public class UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    public String signin(final String username, final String password) {
+    public String signin(final String username, final String password, final HttpServletResponse httpServletResponse) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
+            return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles(), httpServletResponse);
         } catch (final AuthenticationException e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    public String signup(final User user) {
+    public String signup(final User user, final HttpServletResponse httpServletResponse) {
         if (!userRepository.existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
-            return jwtTokenProvider.createToken(user.getUsername(), user.getRoles());
+            return jwtTokenProvider.createToken(user.getUsername(), user.getRoles(), httpServletResponse);
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -61,8 +62,8 @@ public class UserService {
         return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }
 
-    public String refresh(final String username) {
-        return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
+    public String refresh(final HttpServletRequest request, final HttpServletResponse res) {
+        return jwtTokenProvider.createToken(request.getRemoteUser(), userRepository.findByUsername(request.getRemoteUser()).getRoles(), res);
     }
 
 }

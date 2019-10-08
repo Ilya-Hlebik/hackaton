@@ -1,8 +1,8 @@
 package com.web.assistant.controller;
 
+import com.web.assistant.dbo.User;
 import com.web.assistant.dto.request.UserRequestDTO;
 import com.web.assistant.dto.response.UserResponseDTO;
-import com.web.assistant.dbo.User;
 import com.web.assistant.service.UserService;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -28,8 +29,8 @@ public class UserController {
             @ApiResponse(code = 422, message = "Invalid username/password supplied")})
     public String login(
             @ApiParam("Username") @RequestParam final String username,
-            @ApiParam("Password") @RequestParam final String password) {
-        return userService.signin(username, password);
+            @ApiParam("Password") @RequestParam final String password, final HttpServletResponse httpServletResponse) {
+        return userService.signin(username, password, httpServletResponse);
     }
 
     @PostMapping("/signup")
@@ -39,8 +40,8 @@ public class UserController {
             @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
-    public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user) {
-        return userService.signup(modelMapper.map(user, User.class));
+    public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user, final HttpServletResponse httpServletResponse) {
+        return userService.signup(modelMapper.map(user, User.class), httpServletResponse);
     }
 
     @DeleteMapping(value = "/{username}")
@@ -81,8 +82,8 @@ public class UserController {
 
     @GetMapping("/refresh")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public String refresh(final HttpServletRequest req) {
-        return userService.refresh(req.getRemoteUser());
+    public String refresh(final HttpServletRequest req, final HttpServletResponse res) {
+        return userService.refresh(req, res);
     }
 
 }
