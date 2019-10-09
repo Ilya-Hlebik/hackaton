@@ -1,6 +1,7 @@
 package com.web.assistant.controller;
 
 import com.web.assistant.dbo.User;
+import com.web.assistant.dto.request.SignInRequestDTO;
 import com.web.assistant.dto.request.UserRequestDTO;
 import com.web.assistant.dto.response.UserResponseDTO;
 import com.web.assistant.service.UserService;
@@ -27,10 +28,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Invalid username/password supplied")})
-    public String login(
-            @ApiParam("Username") @RequestParam final String username,
-            @ApiParam("Password") @RequestParam final String password, final HttpServletResponse httpServletResponse) {
-        return userService.signin(username, password, httpServletResponse);
+    public String login(@ApiParam("UserName and Password") @RequestBody final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
+        return userService.signin(signInRequestDTO.getUsername(), signInRequestDTO.getPassword(), res);
     }
 
     @PostMapping("/signup")
@@ -40,8 +39,8 @@ public class UserController {
             @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
-    public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user, final HttpServletResponse httpServletResponse) {
-        return userService.signup(modelMapper.map(user, User.class), httpServletResponse);
+    public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user, final HttpServletResponse res) {
+        return userService.signup(modelMapper.map(user, User.class), res);
     }
 
     @DeleteMapping(value = "/{username}")

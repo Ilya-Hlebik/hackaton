@@ -21,16 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.web.assistant.security.WebSecurityConfig.CONTEXT_PATH;
+
 @Component
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.expire-length:3600000}")
-    private final long validityInMilliseconds = 3600000;
+    private static final String TOKEN = "token";
     private final MyUserDetails myUserDetails;
-    /**
-     * THIS IS NOT A SECURE PRACTICE! For simplicity, we are storing a static key here. Ideally, in a
-     * microservices environment, this key would be kept on a config-server.
-     */
+    @Value("${security.jwt.token.expire-length:3600000}")
+    private long validityInMilliseconds;
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
@@ -56,8 +55,8 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
-        final Cookie cookie = new Cookie("token", JWT);
-        cookie.setPath("/assistant");
+        final Cookie cookie = new Cookie(TOKEN, JWT);
+        cookie.setPath(CONTEXT_PATH);
         httpServletResponse.addCookie(cookie);
         return JWT;
     }
@@ -74,7 +73,7 @@ public class JwtTokenProvider {
     public String resolveToken(final HttpServletRequest req) {
         if (req.getCookies() == null)
             return null;
-        final Optional<String> token = Arrays.stream(req.getCookies()).filter(e -> e.getName().equals("token")).map(Cookie::getValue).findFirst();
+        final Optional<String> token = Arrays.stream(req.getCookies()).filter(e -> e.getName().equals(TOKEN)).map(Cookie::getValue).findFirst();
         return token.orElse(null);
     }
 

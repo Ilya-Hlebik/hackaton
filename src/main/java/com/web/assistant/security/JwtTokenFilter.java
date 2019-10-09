@@ -7,9 +7,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.web.assistant.security.WebSecurityConfig.CONTEXT_PATH;
 
 public class JwtTokenFilter extends OncePerRequestFilter {
 
@@ -30,6 +33,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } catch (final CustomException ex) {
             //this is very important, since it guarantees the user is not authenticated at all
             SecurityContextHolder.clearContext();
+            /*final Cookie cookie = new Cookie("token", "");
+            cookie.setPath(CONTEXT_PATH);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(0);
+            httpServletResponse.addCookie(cookie);*/
             httpServletResponse.sendError(ex.getHttpStatus().value(), ex.getMessage());
             return;
         }
