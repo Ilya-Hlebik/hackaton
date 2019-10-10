@@ -33,13 +33,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } catch (final CustomException ex) {
             //this is very important, since it guarantees the user is not authenticated at all
             SecurityContextHolder.clearContext();
-            /*final Cookie cookie = new Cookie("token", "");
-            cookie.setPath(CONTEXT_PATH);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(0);
-            httpServletResponse.addCookie(cookie);*/
-            httpServletResponse.sendError(ex.getHttpStatus().value(), ex.getMessage());
-            return;
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
