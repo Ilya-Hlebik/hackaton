@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,38 +26,39 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
     }
 
     @Override
-    public WorkerResponseDTO create(final WorkerRequestDTO workerRequestDTO) {
-        final Worker worker = repository.save(modelMapper.map(workerRequestDTO, Worker.class));
-        return modelMapper.map(worker, WorkerResponseDTO.class);
-    }
-
-    @Override
-    public void delete(final Long id) {
-
-    }
-
-    @Override
-    public WorkerResponseDTO findOne(final Long id) {
-        final Optional<Worker> workerOptional = repository.findById(id);
-        if (workerOptional.isPresent()) {
-            return modelMapper.map(workerOptional.get(), WorkerResponseDTO.class);
-        }
-        throw new RuntimeException("Worker not found, wrong id");
+    public WorkerResponseDTO findOne(final HttpServletRequest req) {
+        final User user = userService.whoami(req);
+        return modelMapper.map(Optional.ofNullable(user.getWorker()).orElseThrow(), WorkerResponseDTO.class);
     }
 
     @Override
     public List<WorkerResponseDTO> getList() {
         return repository.findAll().stream().map(worker -> modelMapper.map(worker, WorkerResponseDTO.class)).collect(Collectors.toList());
     }
-
     @Override
-    public void update(final Long id, final WorkerResponseDTO workerResponseDTO) {
-
-    }
-
     public WorkerResponseDTO create(final WorkerRequestDTO worker, final HttpServletRequest req) {
         final User user = userService.whoami(req);
         worker.setUser(user);
-        return create(worker);
+        final Worker savedWorker = repository.save(modelMapper.map(worker, Worker.class));
+        return modelMapper.map(savedWorker, WorkerResponseDTO.class);
     }
+
+    @Override
+    public WorkerResponseDTO update(final WorkerRequestDTO responseDto, final HttpServletRequest req) {
+        final User user = userService.whoami(req);
+        final Worker oldWorker = user.getWorker();
+        final Worker newWorker = modelMapper.map(responseDto, Worker.class);
+        newWorker.setId(oldWorker.getId());
+        newWorker.setUser(user);
+        return modelMapper.map(repository.save(newWorker), WorkerResponseDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public void delete(final HttpServletRequest req) {
+        final User user = userService.whoami(req);
+        repository.delete(user.getWorker());
+        user.setWorker(null);
+    }
+
 }

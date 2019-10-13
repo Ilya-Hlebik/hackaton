@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.web.assistant.security.WebSecurityConfig.CONTEXT_PATH;
-
 @Component
 public class JwtTokenProvider {
 
@@ -56,7 +54,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
         final Cookie cookie = new Cookie(TOKEN, JWT);
-        cookie.setPath(CONTEXT_PATH);
+        cookie.setPath("/assistant");
         httpServletResponse.addCookie(cookie);
         return JWT;
     }
