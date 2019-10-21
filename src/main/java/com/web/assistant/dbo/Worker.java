@@ -29,6 +29,9 @@ public class Worker extends AbstractEntity {
     @Column(nullable = false)
     private Status status;
 
+    @Column
+    private String photo;
+
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "USER_ID", nullable = false)
     @EqualsAndHashCode.Exclude

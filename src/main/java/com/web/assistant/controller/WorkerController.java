@@ -57,7 +57,7 @@ public class WorkerController {
             @ApiResponse(code = 404, message = "The worker doesn't exist"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public WorkerResponseDTO me(final HttpServletRequest req) {
-        return workerService.findOne(req);
+        return workerService.findMe(req);
     }
 
     @DeleteMapping(value = "/delete")
@@ -71,4 +71,14 @@ public class WorkerController {
         workerService.delete(req);
     }
 
+    @GetMapping(value = "/{id}")
+    @ApiOperation(value = "${WorkerController.findOne}", response = WorkerResponseDTO.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 404, message = "The user doesn't exist"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public WorkerResponseDTO findOne(@ApiParam("Worker id") @PathVariable final long workerId) {
+        return workerService.findOne(workerId);
+    }
 }

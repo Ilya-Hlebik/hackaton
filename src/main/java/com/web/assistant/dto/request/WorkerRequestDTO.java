@@ -14,6 +14,7 @@ public class WorkerRequestDTO extends AbstractRequestDTO {
     private String sureName;
     private String position;
     private Status status;
+    private String photo;
     @JsonIgnore
     private User user;
 }

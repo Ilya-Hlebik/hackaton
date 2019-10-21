@@ -55,6 +55,7 @@ public class JwtTokenProvider {
                 .compact();
         final Cookie cookie = new Cookie(TOKEN, JWT);
         cookie.setPath("/assistant");
+        cookie.setHttpOnly(true);
         httpServletResponse.addCookie(cookie);
         return JWT;
     }

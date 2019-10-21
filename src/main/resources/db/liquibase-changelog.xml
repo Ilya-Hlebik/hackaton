@@ -60,5 +60,9 @@
                                  constraintName="FK_WORKER_USER" deferrable="false"
                                  initiallyDeferred="false" referencedColumnNames="id" referencedTableName="USER"/>
     </changeSet>
-
+    <changeSet author="Ilya" id="ADD_PHOTO_TO_WORKER">
+        <addColumn tableName="WORKER">
+            <column name="photo" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

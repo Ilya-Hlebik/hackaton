@@ -26,15 +26,15 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
     }
 
     @Override
-    public WorkerResponseDTO findOne(final HttpServletRequest req) {
-        final User user = userService.whoami(req);
-        return modelMapper.map(Optional.ofNullable(user.getWorker()).orElseThrow(), WorkerResponseDTO.class);
+    public WorkerResponseDTO findOne(final long id) {
+        return modelMapper.map(repository.findById(id).orElseThrow(), WorkerResponseDTO.class);
     }
 
     @Override
     public List<WorkerResponseDTO> getList() {
         return repository.findAll().stream().map(worker -> modelMapper.map(worker, WorkerResponseDTO.class)).collect(Collectors.toList());
     }
+
     @Override
     public WorkerResponseDTO create(final WorkerRequestDTO worker, final HttpServletRequest req) {
         final User user = userService.whoami(req);
@@ -59,6 +59,11 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
         final User user = userService.whoami(req);
         repository.delete(user.getWorker());
         user.setWorker(null);
+    }
+
+    public WorkerResponseDTO findMe(final HttpServletRequest req) {
+        final User user = userService.whoami(req);
+        return modelMapper.map(Optional.ofNullable(user.getWorker()).orElseThrow(), WorkerResponseDTO.class);
     }
 
 }

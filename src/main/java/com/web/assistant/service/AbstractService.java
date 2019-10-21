@@ -19,7 +19,7 @@ public abstract class AbstractService<ResponseDto extends AbstractResponseDTO,Re
 
     public abstract void delete(final HttpServletRequest req);
 
-    public abstract ResponseDto findOne(final HttpServletRequest req);
+    public abstract ResponseDto findOne(final long id);
 
     public abstract List<ResponseDto> getList();
 }
