@@ -78,11 +78,4 @@ public class UserController {
     public UserResponseDTO whoami(final HttpServletRequest req) {
         return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
     }
-
-    @GetMapping("/refresh")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public String refresh(final HttpServletRequest req, final HttpServletResponse res) {
-        return userService.refresh(req, res);
-    }
-
 }
