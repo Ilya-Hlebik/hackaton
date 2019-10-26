@@ -1,7 +1,9 @@
 package com.web.assistant.security;
 
 import com.web.assistant.exception.CustomException;
+import com.web.assistant.exception.SingInException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,12 +28,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final Map<String, String> tokens = jwtTokenProvider.resolveToken(req);
         try {
             if (tokens != null && tokens.size() == 2 && jwtTokenProvider.validateTokens(tokens, req, res)) {
+                if(req.getServletPath().equals("/users/signin")){
+                    throw new SingInException("You already logged in", HttpStatus.METHOD_NOT_ALLOWED);
+                }
                 final Authentication auth = jwtTokenProvider.getAuthentication(Arrays.stream(req.getCookies())
                         .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN))
                         .map(Cookie::getValue).findFirst().orElseThrow(), jwtTokenProvider.accessSecretKey);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (final CustomException ex) {
+
+        }
+        catch (final SingInException ex){
+            res.sendError(ex.getHttpStatus().value(), ex.getMessage());
+        }
+        catch (final CustomException ex) {
             SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(req, res);
