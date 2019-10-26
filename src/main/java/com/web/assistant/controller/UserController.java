@@ -78,4 +78,14 @@ public class UserController {
     public UserResponseDTO whoami(final HttpServletRequest req) {
         return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
     }
+
+    @GetMapping(value = "/logout")
+    @ApiOperation(value = "${UserController.logout}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public void logOut(final HttpServletRequest req){
+        userService.logOut(req);
+    }
 }

@@ -2,6 +2,7 @@ package com.web.assistant.security;
 
 import com.web.assistant.enumerated.Role;
 import com.web.assistant.exception.CustomException;
+import com.web.assistant.repository.BlackListRepository;
 import com.web.assistant.repository.UserRepository;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +26,10 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     public static final String ACCESS_TOKEN = "access_token";
-    private static final String REFRESH_TOKEN = "refresh_token";
+    public static final String REFRESH_TOKEN = "refresh_token";
     private final MyUserDetails myUserDetails;
     private final UserRepository userRepository;
+    private final BlackListRepository blackListRepository;
     @Value("${security.jwt.token.access.secret-key}")
     public String accessSecretKey;
     @Value("${security.jwt.token.refresh.secret-key}")
@@ -39,9 +41,10 @@ public class JwtTokenProvider {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    public JwtTokenProvider(final MyUserDetails myUserDetails, final UserRepository userRepository) {
+    public JwtTokenProvider(final MyUserDetails myUserDetails, final UserRepository userRepository, final BlackListRepository blackListRepository) {
         this.myUserDetails = myUserDetails;
         this.userRepository = userRepository;
+        this.blackListRepository = blackListRepository;
     }
 
     @PostConstruct
@@ -119,4 +122,7 @@ public class JwtTokenProvider {
         }
     }
 
+    public boolean inBLackList(final Map<String, String> token) {
+        return token != null && blackListRepository.findById(token.get(REFRESH_TOKEN)).isPresent();
+    }
 }

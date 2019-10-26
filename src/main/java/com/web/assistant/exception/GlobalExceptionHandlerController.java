@@ -43,4 +43,8 @@ public class GlobalExceptionHandlerController {
         res.sendError(HttpStatus.BAD_REQUEST.value(), "Something went wrong");
     }
 
+    @ExceptionHandler(SingInException.class)
+    public void handleSingInException(final HttpServletResponse res, final CustomException ex) throws IOException {
+        res.sendError(ex.getHttpStatus().value(), ex.getMessage());
+    }
 }

@@ -1,9 +1,14 @@
 package com.web.assistant.service;
 
+import com.web.assistant.dbo.BlackList;
 import com.web.assistant.dbo.User;
 import com.web.assistant.exception.CustomException;
+import com.web.assistant.repository.BlackListRepository;
 import com.web.assistant.repository.UserRepository;
 import com.web.assistant.security.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,14 +19,19 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.Map;
 
 import static com.web.assistant.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.web.assistant.security.JwtTokenProvider.REFRESH_TOKEN;
 
 @Service
 @AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final BlackListRepository blackListRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -62,5 +72,15 @@ public class UserService {
 
     public User whoami(final HttpServletRequest req) {
         return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req).get(ACCESS_TOKEN), jwtTokenProvider.accessSecretKey));
+    }
+
+    public void logOut(final HttpServletRequest req) {
+        final Map<String, String> stringStringMap = jwtTokenProvider.resolveToken(req);
+        final String refreshToken = stringStringMap.get(REFRESH_TOKEN);
+        final Jws<Claims> claimsJws = Jwts.parser().setSigningKey(jwtTokenProvider.refreshSecretKey).parseClaimsJws(refreshToken);
+        final Date expiration = claimsJws.getBody().getExpiration();
+        final Date now = new Date();
+        final long liveTime = expiration.getTime() - now.getTime();
+        blackListRepository.save(new BlackList(refreshToken, liveTime));
     }
 }
