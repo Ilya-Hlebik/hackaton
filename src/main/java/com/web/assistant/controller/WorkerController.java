@@ -19,7 +19,7 @@ public class WorkerController {
     private final WorkerService workerService;
 
     @GetMapping("/all")
-    @ApiOperation(value = "${WorkerController.findAll}", response = UserResponseDTO.class)
+    @ApiOperation(value = "${WorkerController.findAll}", response = WorkerResponseDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 403, message = "Access denied"),
