@@ -2,7 +2,9 @@ package com.web.assistant.service;
 
 import com.web.assistant.dbo.BlackList;
 import com.web.assistant.dbo.User;
+import com.web.assistant.dto.request.SignInRequestDTO;
 import com.web.assistant.exception.CustomException;
+import com.web.assistant.repository.AbstractRepository;
 import com.web.assistant.repository.BlackListRepository;
 import com.web.assistant.repository.UserRepository;
 import com.web.assistant.security.JwtTokenProvider;
@@ -29,7 +31,7 @@ import static com.web.assistant.security.JwtTokenProvider.REFRESH_TOKEN;
 @AllArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final AbstractRepository repository;
 
     private final BlackListRepository blackListRepository;
 
@@ -39,19 +41,19 @@ public class UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    public String signin(final String username, final String password, final HttpServletResponse res) {
+    public String signIn(final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return jwtTokenProvider.createTokens(username, userRepository.findByUsername(username).getRoles(), res).get(ACCESS_TOKEN);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDTO.getUsername(), signInRequestDTO.getPassword()));
+            return jwtTokenProvider.createTokens(signInRequestDTO.getUsername(), ((UserRepository) repository).findByUsername(signInRequestDTO.getUsername()).getRoles(), res).get(ACCESS_TOKEN);
         } catch (final AuthenticationException e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    public String signup(final User user, final HttpServletResponse res) {
-        if (!userRepository.existsByUsername(user.getUsername())) {
+    public String signUp(final User user, final HttpServletResponse res) {
+        if (!((UserRepository) repository).existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userRepository.save(user);
+            ((UserRepository) repository).save(user);
             return jwtTokenProvider.createTokens(user.getUsername(), user.getRoles(), res).get(ACCESS_TOKEN);
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -59,19 +61,19 @@ public class UserService {
     }
 
     public void delete(final String username) {
-        userRepository.deleteByUsername(username);
+        ((UserRepository) repository).deleteByUsername(username);
     }
 
     public User search(final String username) {
-        final User user = userRepository.findByUsername(username);
+        final User user = ((UserRepository) repository).findByUsername(username);
         if (user == null) {
             throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
         }
         return user;
     }
 
-    public User whoami(final HttpServletRequest req) {
-        return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req).get(ACCESS_TOKEN), jwtTokenProvider.accessSecretKey));
+    public User findMe(final HttpServletRequest req) {
+        return ((UserRepository) repository).findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req).get(ACCESS_TOKEN), jwtTokenProvider.accessSecretKey));
     }
 
     public void logOut(final HttpServletRequest req) {

@@ -16,12 +16,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequestDTO, Worker> {
-    private final ModelMapper modelMapper;
+
     private final UserService userService;
 
     public WorkerService(final AbstractRepository<Worker> repository, final ModelMapper modelMapper, final UserService userService) {
-        super(repository);
-        this.modelMapper = modelMapper;
+        super(repository, modelMapper);
         this.userService = userService;
     }
 
@@ -37,7 +36,7 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
 
     @Override
     public WorkerResponseDTO create(final WorkerRequestDTO worker, final HttpServletRequest req) {
-        final User user = userService.whoami(req);
+        final User user = userService.findMe(req);
         worker.setUser(user);
         final Worker savedWorker = repository.save(modelMapper.map(worker, Worker.class));
         return modelMapper.map(savedWorker, WorkerResponseDTO.class);
@@ -45,7 +44,7 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
 
     @Override
     public WorkerResponseDTO update(final WorkerRequestDTO responseDto, final HttpServletRequest req) {
-        final User user = userService.whoami(req);
+        final User user = userService.findMe(req);
         final Worker oldWorker = user.getWorker();
         final Worker newWorker = modelMapper.map(responseDto, Worker.class);
         newWorker.setId(oldWorker.getId());
@@ -56,13 +55,13 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
     @Override
     @Transactional
     public void delete(final HttpServletRequest req) {
-        final User user = userService.whoami(req);
+        final User user = userService.findMe(req);
         repository.delete(user.getWorker());
         user.setWorker(null);
     }
 
     public WorkerResponseDTO findMe(final HttpServletRequest req) {
-        final User user = userService.whoami(req);
+        final User user = userService.findMe(req);
         return modelMapper.map(Optional.ofNullable(user.getWorker()).orElseThrow(), WorkerResponseDTO.class);
     }
 

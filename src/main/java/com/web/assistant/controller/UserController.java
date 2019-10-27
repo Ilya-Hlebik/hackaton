@@ -29,7 +29,7 @@ public class UserController {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Invalid username/password supplied")})
     public String login(@ApiParam("UserName and Password") @RequestBody final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
-        return userService.signin(signInRequestDTO.getUsername(), signInRequestDTO.getPassword(), res);
+        return userService.signIn(signInRequestDTO, res);
     }
 
     @PostMapping("/signup")
@@ -40,7 +40,7 @@ public class UserController {
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public String signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user, final HttpServletResponse res) {
-        return userService.signup(modelMapper.map(user, User.class), res);
+        return userService.signUp(modelMapper.map(user, User.class), res);
     }
 
     @DeleteMapping(value = "/{username}")
@@ -75,8 +75,8 @@ public class UserController {
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
-    public UserResponseDTO whoami(final HttpServletRequest req) {
-        return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
+    public UserResponseDTO findMe(final HttpServletRequest req) {
+        return modelMapper.map(userService.findMe(req), UserResponseDTO.class);
     }
 
     @GetMapping(value = "/logout")
