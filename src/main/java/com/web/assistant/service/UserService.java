@@ -31,7 +31,7 @@ import static com.web.assistant.security.JwtTokenProvider.REFRESH_TOKEN;
 @AllArgsConstructor
 public class UserService {
 
-    private final AbstractRepository repository;
+    private final AbstractRepository<User> repository;
 
     private final BlackListRepository blackListRepository;
 
@@ -53,7 +53,7 @@ public class UserService {
     public String signUp(final User user, final HttpServletResponse res) {
         if (!((UserRepository) repository).existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            ((UserRepository) repository).save(user);
+            repository.save(user);
             return jwtTokenProvider.createTokens(user.getUsername(), user.getRoles(), res).get(ACCESS_TOKEN);
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);

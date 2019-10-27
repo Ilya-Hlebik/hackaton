@@ -1,55 +1,70 @@
 package com.web.assistant.service;
 
+import com.web.assistant.converter.DtoConverter;
+import com.web.assistant.dbo.Position;
 import com.web.assistant.dbo.User;
 import com.web.assistant.dbo.Worker;
 import com.web.assistant.dto.request.WorkerRequestDTO;
 import com.web.assistant.dto.response.WorkerResponseDTO;
+import com.web.assistant.enumerated.PositionName;
 import com.web.assistant.repository.AbstractRepository;
+import com.web.assistant.repository.PositionRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequestDTO, Worker> {
 
     private final UserService userService;
+    private final AbstractRepository<Position> positionRepository;
 
-    public WorkerService(final AbstractRepository<Worker> repository, final ModelMapper modelMapper, final UserService userService) {
-        super(repository, modelMapper);
+    public WorkerService(final AbstractRepository<Worker> repository, final ModelMapper modelMapper,
+                         final DtoConverter<WorkerResponseDTO, WorkerRequestDTO, Worker> dtoConverter,
+                         final UserService userService, final AbstractRepository<Position> positionRepository) {
+        super(repository, modelMapper, dtoConverter);
         this.userService = userService;
+        this.positionRepository = positionRepository;
     }
 
     @Override
     public WorkerResponseDTO findOne(final long id) {
-        return modelMapper.map(repository.findById(id).orElseThrow(), WorkerResponseDTO.class);
+        return dtoConverter.convertToDto(repository.findById(id).orElseThrow());
     }
 
     @Override
     public List<WorkerResponseDTO> getList() {
-        return repository.findAll().stream().map(worker -> modelMapper.map(worker, WorkerResponseDTO.class)).collect(Collectors.toList());
+        final List<Worker> workers = repository.findAll();
+        return dtoConverter.convertToDto(workers);
     }
 
     @Override
     public WorkerResponseDTO create(final WorkerRequestDTO worker, final HttpServletRequest req) {
         final User user = userService.findMe(req);
         worker.setUser(user);
-        final Worker savedWorker = repository.save(modelMapper.map(worker, Worker.class));
-        return modelMapper.map(savedWorker, WorkerResponseDTO.class);
+        final Worker dbo = dtoConverter.convertToDbo(worker);
+        final List<PositionName> collect = dbo.getPositions().stream().map(Position::getPositionName).collect(Collectors.toList());
+        final List<Position> positions = ((PositionRepository) positionRepository).findAllByPositionNameIn(collect);
+        dbo.setPositions(positions);
+        return dtoConverter.convertToDto(repository.save(dbo));
     }
 
     @Override
     public WorkerResponseDTO update(final WorkerRequestDTO responseDto, final HttpServletRequest req) {
         final User user = userService.findMe(req);
         final Worker oldWorker = user.getWorker();
-        final Worker newWorker = modelMapper.map(responseDto, Worker.class);
+        final Worker newWorker = dtoConverter.convertToDbo(responseDto);
         newWorker.setId(oldWorker.getId());
         newWorker.setUser(user);
-        return modelMapper.map(repository.save(newWorker), WorkerResponseDTO.class);
+        final List<PositionName> collect = newWorker.getPositions().stream().map(Position::getPositionName).collect(Collectors.toList());
+        final List<Position> positions = ((PositionRepository) positionRepository).findAllByPositionNameIn(collect);
+        newWorker.setPositions(positions);
+        repository.save(newWorker);
+        return dtoConverter.convertToDto(newWorker);
     }
 
     @Override
@@ -61,8 +76,8 @@ public class WorkerService extends AbstractService<WorkerResponseDTO, WorkerRequ
     }
 
     public WorkerResponseDTO findMe(final HttpServletRequest req) {
-        final User user = userService.findMe(req);
-        return modelMapper.map(Optional.ofNullable(user.getWorker()).orElseThrow(), WorkerResponseDTO.class);
+        final Worker worker = userService.findMe(req).getWorker();
+        return dtoConverter.convertToDto(worker);
     }
 
 }

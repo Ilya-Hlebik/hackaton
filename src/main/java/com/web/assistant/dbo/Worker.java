@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name = "WORKER")
@@ -22,8 +23,13 @@ public class Worker extends AbstractEntity {
     @Column(nullable = false)
     private String sureName;
 
-    @Column(nullable = false)
-    private String position;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "WORKER_POSITION",
+            joinColumns = {@JoinColumn(name = "WORKER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "POSITION_ID")})
+
+    @ToString.Exclude
+    private List<Position> positions;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,12 +1,13 @@
 package com.web.assistant.controller;
 
+import com.web.assistant.dbo.Position;
 import com.web.assistant.dbo.User;
 import com.web.assistant.dbo.Worker;
 import com.web.assistant.dto.response.UserResponseDTO;
 import com.web.assistant.enumerated.Role;
 import com.web.assistant.enumerated.Status;
+import com.web.assistant.repository.PositionRepository;
 import com.web.assistant.repository.UserRepository;
-import com.web.assistant.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -27,8 +29,8 @@ import java.util.Random;
 @AllArgsConstructor
 public class TempController {
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
     private final UserRepository userRepository;
+    private final PositionRepository positionRepository;
     private final ModelMapper modelMapper;
 
     @GetMapping("/createOneAccount")
@@ -50,12 +52,14 @@ public class TempController {
             worker.setUser(user);
             worker.setName("Test worker_name" + new Random().nextInt());
             worker.setSureName("Test worker_sureName" + new Random().nextInt());
-            worker.setPosition("Test position_name" + new Random().nextInt());
+            final List<Position> allPositions = positionRepository.findAll();
+            final Position position = allPositions.get(new Random().nextInt(allPositions.size()));
+            worker.setPositions(Collections.singletonList(position));
             worker.setStatus(Status.values()[new Random().nextInt(Status.values().length)]);
             worker.setPhoto("https://i.redd.it/pvxchv25rdb11.jpg");
             user.setWorker(worker);
             userRepository.save(user);
         }
-        return modelMapper.map(user,UserResponseDTO.class);
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 }

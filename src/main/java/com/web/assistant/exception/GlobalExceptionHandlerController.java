@@ -31,6 +31,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(CustomException.class)
     public void handleCustomException(final HttpServletResponse res, final CustomException ex) throws IOException {
         res.sendError(ex.getHttpStatus().value(), ex.getMessage());
+        ex.printStackTrace();
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -39,12 +40,14 @@ public class GlobalExceptionHandlerController {
     }
 
     @ExceptionHandler(Exception.class)
-    public void handleException(final HttpServletResponse res) throws IOException {
+    public void handleException(final HttpServletResponse res, final Exception ex) throws IOException {
         res.sendError(HttpStatus.BAD_REQUEST.value(), "Something went wrong");
+        ex.printStackTrace();
     }
 
     @ExceptionHandler(SingInException.class)
     public void handleSingInException(final HttpServletResponse res, final CustomException ex) throws IOException {
         res.sendError(ex.getHttpStatus().value(), ex.getMessage());
+        ex.printStackTrace();
     }
 }

@@ -1,5 +1,6 @@
 package com.web.assistant.service;
 
+import com.web.assistant.converter.DtoConverter;
 import com.web.assistant.dbo.AbstractEntity;
 import com.web.assistant.dto.AbstractRequestDTO;
 import com.web.assistant.dto.AbstractResponseDTO;
@@ -11,9 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @AllArgsConstructor
-public abstract class AbstractService<ResponseDto extends AbstractResponseDTO,RequestDto extends AbstractRequestDTO, EntityClass extends AbstractEntity> {
+public abstract class AbstractService<ResponseDto extends AbstractResponseDTO, RequestDto extends AbstractRequestDTO, EntityClass extends AbstractEntity> {
     protected final AbstractRepository<EntityClass> repository;
     protected final ModelMapper modelMapper;
+    protected final DtoConverter<ResponseDto, RequestDto, EntityClass> dtoConverter;
 
     public abstract ResponseDto create(final RequestDto dtoClass, final HttpServletRequest req);
 

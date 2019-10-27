@@ -65,4 +65,146 @@
             <column name="photo" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="Ilya" id="CREATE_POSITION_MANY_TO_MANY_WITH_WORKER">
+        <createTable tableName="POSITION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="POSITIONPK"/>
+            </column>
+            <column name="POSITION_NAME" type="VARCHAR(255)"/>
+        </createTable>
+        <createTable tableName="WORKER_POSITION">
+            <column name="WORKER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITION_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="POSITION_ID" baseTableName="WORKER_POSITION"
+                                 constraintName="FK_WORKER_POSITION_POSITION" referencedColumnNames="id"
+                                 referencedTableName="POSITION"/>
+        <addForeignKeyConstraint baseColumnNames="WORKER_ID" baseTableName="WORKER_POSITION"
+                                 constraintName="FK_WORKER_POSITION_WORKER" referencedColumnNames="id"
+                                 referencedTableName="WORKER"/>
+        <dropColumn columnName="position" tableName="worker"/>
+    </changeSet>
+    <changeSet id="ADD_DEFAULT_POSITIONS" author="Ilya">
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">A_B_TESTER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">APPLICATION_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">BUSINESS_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">COMPUTER_OPERATOR</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">COMPUTER_REPAIR_TECHNICIAN</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">COMPUTER_SCIENTIST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">COMPUTER_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">CHIEF_INFORMATION_OFFICER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">DATA_ENTRY_CLERK</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">DATABASE_ADMINISTRATOR</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">DATA_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">DATA_DESIGNER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">DATA_SCIENTIST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">HARDWARE_ENGINEER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">INFORMATION_SYSTEMS_TECHNICIAN</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">IT_ASSISTANT</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">NETWORK_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">NETWORK_ADMINISTRATOR</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">PROGRAMMER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">PRODUCT_MANAGER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">RAPID_PROTOTYPER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SCRUM_MASTER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_ARCHITECT</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_DESIGN</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_ENGINEER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_PROJECT_MANAGER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_QUALITY_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOFTWARE_TEST_ENGINEER_TESTER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SOLUTION_ARCHITECT</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SUPPORT_TECHNICIAN_HELP_DESK</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SYSTEM_ADMINISTRATOR</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">SYSTEMS_ANALYST</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">USER_EXPERIENCE_DESIGNER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">USER_INTERACTION_DESIGNER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">USER_RESEARCHER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">VISUAL_DESIGNER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">WEB_DEVELOPER</column>
+        </insert>
+        <insert tableName="POSITION">
+            <column name="POSITION_NAME">WEBSITE_ADMINISTRATOR</column>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
