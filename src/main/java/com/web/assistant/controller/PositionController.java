@@ -1,15 +1,12 @@
 package com.web.assistant.controller;
 
+import com.web.assistant.dto.request.PositionRequestDto;
 import com.web.assistant.dto.response.PositionResponseDto;
 import com.web.assistant.service.PositionService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +26,28 @@ public class PositionController {
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public List<PositionResponseDto> findAll() {
         return positionService.getList();
+    }
+
+    @PostMapping("/create")
+    @ApiOperation(value = "${PositionController.create}", response = PositionResponseDto.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Probably you try to create more then 1 worker for 1 user"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public PositionResponseDto create(@ApiParam("Create position") @RequestBody final PositionRequestDto position) {
+        return positionService.create(position);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    @ApiOperation(value = "${PositionController.delete}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 404, message = "The worker doesn't exist"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public void delete(@PathVariable final long id) {
+        positionService.delete(id);
     }
 }

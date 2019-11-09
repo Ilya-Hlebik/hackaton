@@ -9,6 +9,7 @@ import com.web.assistant.repository.PositionRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,5 +33,15 @@ public class PositionService extends AbstractService<PositionResponseDto, Positi
 
     public List<PositionResponseDto> getList() {
         return dtoConverter.convertToDto(repository.findAll());
+    }
+
+    public PositionResponseDto create(final PositionRequestDto positionRequestDto) {
+        final Position position = dtoConverter.convertToDbo(positionRequestDto);
+        return dtoConverter.convertToDto(repository.save(position));
+    }
+
+    @Transactional
+    public void delete(final long id) {
+        repository.deleteById(id);
     }
 }
