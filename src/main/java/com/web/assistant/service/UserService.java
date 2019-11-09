@@ -1,8 +1,11 @@
 package com.web.assistant.service;
 
+import com.web.assistant.converter.DtoConverter;
 import com.web.assistant.dbo.BlackList;
 import com.web.assistant.dbo.User;
 import com.web.assistant.dto.request.SignInRequestDTO;
+import com.web.assistant.dto.request.UserRequestDTO;
+import com.web.assistant.dto.response.UserResponseDTO;
 import com.web.assistant.exception.CustomException;
 import com.web.assistant.repository.AbstractRepository;
 import com.web.assistant.repository.BlackListRepository;
@@ -11,7 +14,7 @@ import com.web.assistant.security.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,10 +31,7 @@ import static com.web.assistant.security.JwtTokenProvider.ACCESS_TOKEN;
 import static com.web.assistant.security.JwtTokenProvider.REFRESH_TOKEN;
 
 @Service
-@AllArgsConstructor
-public class UserService {
-
-    private final AbstractRepository<User> repository;
+public class UserService extends AbstractService<UserResponseDTO, UserRequestDTO, User> {
 
     private final BlackListRepository blackListRepository;
 
@@ -41,20 +41,32 @@ public class UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    public String signIn(final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
+    public UserService(final AbstractRepository<User> repository, final ModelMapper modelMapper,
+                       final DtoConverter<UserResponseDTO, UserRequestDTO, User> dtoConverter,
+                       final BlackListRepository blackListRepository, final PasswordEncoder passwordEncoder,
+                       final JwtTokenProvider jwtTokenProvider, final AuthenticationManager authenticationManager) {
+        super(repository, modelMapper, dtoConverter);
+        this.blackListRepository = blackListRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public UserResponseDTO signIn(final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDTO.getUsername(), signInRequestDTO.getPassword()));
-            return jwtTokenProvider.createTokens(signInRequestDTO.getUsername(), ((UserRepository) repository).findByUsername(signInRequestDTO.getUsername()).getRoles(), res).get(ACCESS_TOKEN);
+            final User user = ((UserRepository) repository).findByUsername(signInRequestDTO.getUsername());
+            jwtTokenProvider.createTokens(signInRequestDTO.getUsername(), user.getRoles(), res);
+            return dtoConverter.convertToDto(user);
         } catch (final AuthenticationException e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    public String signUp(final User user, final HttpServletResponse res) {
+    public UserResponseDTO signUp(final User user, final HttpServletResponse res) {
         if (!((UserRepository) repository).existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            repository.save(user);
-            return jwtTokenProvider.createTokens(user.getUsername(), user.getRoles(), res).get(ACCESS_TOKEN);
+            return dtoConverter.convertToDto(repository.save(user));
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }

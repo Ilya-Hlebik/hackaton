@@ -23,13 +23,26 @@ public class Worker extends AbstractEntity {
     @Column(nullable = false)
     private String sureName;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "WORKER_POSITION",
             joinColumns = {@JoinColumn(name = "WORKER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "POSITION_ID")})
-
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Position> positions;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "WORKER_TECHNOLOGY",
+            joinColumns = {@JoinColumn(name = "WORKER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "TECHNOLOGY_ID")})
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Technology> technologies;
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Skill> skills;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

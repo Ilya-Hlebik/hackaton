@@ -9,19 +9,19 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Entity
-@Table(name = "POSITION")
 @Data
+@Entity
+@Table(name = "TECHNOLOGY")
 @EqualsAndHashCode(callSuper = true)
-public class Position extends AbstractEntity {
+public class Technology extends AbstractEntity {
 
     @NotNull
-    @Column(name = "POSITION_NAME")
-    private String positionName;
+    @Column(name = "TECHNOLOGY_NAME")
+    private String technologyName;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "WORKER_POSITION",
-            joinColumns = {@JoinColumn(name = "POSITION_ID")},
+    @JoinTable(name = "WORKER_TECHNOLOGY",
+            joinColumns = {@JoinColumn(name = "TECHNOLOGY_ID")},
             inverseJoinColumns = {@JoinColumn(name = "WORKER_ID")})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

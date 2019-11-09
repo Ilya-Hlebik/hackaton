@@ -13,7 +13,9 @@ import java.util.List;
 public class WorkerResponseDTO extends AbstractResponseDTO {
     private String name;
     private String sureName;
-    private List<String> positions;
+    private List<PositionResponseDto> positions;
+    private List<TechnologyResponseDto> technologies;
+    private List<SkillResponseDto> skills;
     private String status;
     private String photo;
     @JsonIgnore

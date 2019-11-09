@@ -1,7 +1,6 @@
 package com.web.assistant.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.web.assistant.dbo.Position;
 import com.web.assistant.dbo.User;
 import com.web.assistant.dto.AbstractRequestDTO;
 import com.web.assistant.enumerated.Status;
@@ -15,7 +14,9 @@ import java.util.List;
 public class WorkerRequestDTO extends AbstractRequestDTO {
     private String name;
     private String sureName;
-    private List<Position> position;
+    private List<PositionRequestDto> position;
+    private List<TechnologyRequestDto> technologies;
+    private List<SkillRequestDto> skills;
     private Status status;
     private String photo;
     @JsonIgnore

@@ -1,12 +1,11 @@
 package com.web.assistant.controller;
 
-import com.web.assistant.dbo.Position;
-import com.web.assistant.dbo.User;
-import com.web.assistant.dbo.Worker;
+import com.web.assistant.dbo.*;
 import com.web.assistant.dto.response.UserResponseDTO;
 import com.web.assistant.enumerated.Role;
 import com.web.assistant.enumerated.Status;
 import com.web.assistant.repository.PositionRepository;
+import com.web.assistant.repository.TechnologyRepository;
 import com.web.assistant.repository.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +30,7 @@ public class TempController {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final PositionRepository positionRepository;
+    private final TechnologyRepository technologyRepository;
     private final ModelMapper modelMapper;
 
     @GetMapping("/createOneAccount")
@@ -41,7 +41,7 @@ public class TempController {
             @ApiResponse(code = 404, message = "The user doesn't exist"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public UserResponseDTO createOneAccount() {
-        final User user = new User();
+        User user = new User();
         user.setUsername("Test name" + new Random().nextInt());
         user.setPassword("Test pass" + new Random().nextInt());
         user.setEmail("Test email" + new Random().nextInt());
@@ -57,8 +57,13 @@ public class TempController {
             worker.setPositions(Collections.singletonList(position));
             worker.setStatus(Status.values()[new Random().nextInt(Status.values().length)]);
             worker.setPhoto("https://i.redd.it/pvxchv25rdb11.jpg");
+            final List<Technology> technologies = technologyRepository.findAll();
+            final Technology technology = technologies.get(new Random().nextInt(technologies.size()));
+            worker.setTechnologies(Collections.singletonList(technology));
+            worker.setSkills(List.of(new Skill("skill " + new Random().nextInt(), worker),
+                    new Skill("skill " + new Random().nextInt(), worker)));
             user.setWorker(worker);
-            userRepository.save(user);
+            user = userRepository.save(user);
         }
         return modelMapper.map(user, UserResponseDTO.class);
     }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -43,9 +44,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         } catch (final SingInException ex) {
             res.sendError(ex.getHttpStatus().value(), ex.getMessage());
-        } catch (final CustomException ex) {
+        } catch (final CustomException | UsernameNotFoundException ex) {
             SecurityContextHolder.clearContext();
         }
+
         filterChain.doFilter(req, res);
     }
 
