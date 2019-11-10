@@ -33,11 +33,6 @@ public class TempController {
     private final TechnologyRepository technologyRepository;
     private final ModelMapper modelMapper;
 
-    public static void main(final String[] args) {
-        for (int i = 0; i<100 ; i++)
-        System.out.println(new Random().nextInt(99));
-    }
-
     @GetMapping("/createOneAccount")
     @ApiOperation(value = "Create account", response = UserResponseDTO.class)
     @ApiResponses(value = {

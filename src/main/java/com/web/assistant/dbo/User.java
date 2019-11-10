@@ -32,6 +32,9 @@ public class User extends AbstractEntity{
   @ToString.Exclude
   List<Role> roles;
 
+  @Column(nullable = false, name = "ACTIVE")
+  boolean active;
+
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,
       fetch = FetchType.LAZY)
   @EqualsAndHashCode.Exclude
