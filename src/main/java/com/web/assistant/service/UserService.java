@@ -3,6 +3,7 @@ package com.web.assistant.service;
 import com.web.assistant.converter.DtoConverter;
 import com.web.assistant.dbo.BlackList;
 import com.web.assistant.dbo.User;
+import com.web.assistant.dto.request.PasswordUpdateRequestDto;
 import com.web.assistant.dto.request.SignInRequestDTO;
 import com.web.assistant.dto.request.UserRequestDTO;
 import com.web.assistant.dto.response.UserResponseDTO;
@@ -56,6 +57,9 @@ public class UserService extends AbstractService<UserResponseDTO, UserRequestDTO
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDTO.getUsername(), signInRequestDTO.getPassword()));
             final User user = ((UserRepository) repository).findByUsername(signInRequestDTO.getUsername());
+            if (!user.isActive()) {
+                throw new CustomException("Invalid password, please change", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+            }
             jwtTokenProvider.createTokens(signInRequestDTO.getUsername(), user.getRoles(), res);
             return dtoConverter.convertToDto(user);
         } catch (final AuthenticationException e) {
@@ -63,9 +67,10 @@ public class UserService extends AbstractService<UserResponseDTO, UserRequestDTO
         }
     }
 
-    public UserResponseDTO signUp(final User user, final HttpServletResponse res) {
+    public UserResponseDTO signUp(final User user, final boolean active) {
         if (!((UserRepository) repository).existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setActive(active);
             return dtoConverter.convertToDto(repository.save(user));
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -96,5 +101,23 @@ public class UserService extends AbstractService<UserResponseDTO, UserRequestDTO
         final Date now = new Date();
         final long liveTime = expiration.getTime() - now.getTime();
         blackListRepository.save(new BlackList(refreshToken, liveTime));
+    }
+
+    public UserResponseDTO updatePassword(final PasswordUpdateRequestDto updateRequestDto) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(updateRequestDto.getUsername(), updateRequestDto.getOldPassword()));
+            if (!updateRequestDto.getNewPasswordFirstEntry().equals(updateRequestDto.getNewPasswordSecondEntry())){
+                throw new CustomException("Passwords do not match", HttpStatus.BAD_REQUEST);
+            }
+            if (updateRequestDto.getNewPasswordFirstEntry().equals(updateRequestDto.getOldPassword())){
+                throw new CustomException("Old password and new password shouldn't be the same", HttpStatus.BAD_REQUEST);
+            }
+            final User user = ((UserRepository) repository).findByUsername(updateRequestDto.getUsername());
+            user.setPassword(passwordEncoder.encode(updateRequestDto.getNewPasswordFirstEntry()));
+            user.setActive(true);
+            return dtoConverter.convertToDto(repository.save(user));
+        } catch (final AuthenticationException e) {
+            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 }

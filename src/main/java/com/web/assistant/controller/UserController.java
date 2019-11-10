@@ -1,6 +1,7 @@
 package com.web.assistant.controller;
 
 import com.web.assistant.dbo.User;
+import com.web.assistant.dto.request.PasswordUpdateRequestDto;
 import com.web.assistant.dto.request.SignInRequestDTO;
 import com.web.assistant.dto.request.UserRequestDTO;
 import com.web.assistant.dto.response.UserResponseDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -26,6 +28,7 @@ public class UserController {
     @PostMapping("/signin")
     @ApiOperation(value = "${UserController.signin}", response = UserResponseDTO.class)
     @ApiResponses(value = {
+            @ApiResponse(code = 203, message = "You should change password"),
             @ApiResponse(code = 400, message = "Something went wrong"),
             @ApiResponse(code = 422, message = "Invalid username/password supplied")})
     public UserResponseDTO login(@ApiParam("UserName and Password") @RequestBody final SignInRequestDTO signInRequestDTO, final HttpServletResponse res) {
@@ -39,8 +42,31 @@ public class UserController {
             @ApiResponse(code = 403, message = "Access denied"),
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
-    public UserResponseDTO signUp(@ApiParam("Signup User") @RequestBody final UserRequestDTO user, final HttpServletResponse res) {
-        return userService.signUp(modelMapper.map(user, User.class), res);
+    public UserResponseDTO signUp(@ApiParam("Signup User") @Valid @RequestBody final UserRequestDTO user) {
+        return userService.signUp(modelMapper.map(user, User.class),  true);
+    }
+
+    @PostMapping("/create")
+    @ApiOperation(value = "${UserController.create}", response = UserResponseDTO.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 422, message = "Username is already in use"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public UserResponseDTO create(@ApiParam("Create User manually by admin") @RequestBody final UserRequestDTO user) {
+        return userService.signUp(modelMapper.map(user, User.class), false);
+    }
+
+    @PutMapping("/update_pass")
+    @ApiOperation(value = "${UserController.update_pass}", response = UserResponseDTO.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 422, message = "Username is already in use"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public UserResponseDTO updatePassword(@ApiParam("Password") @Valid @RequestBody final PasswordUpdateRequestDto user) {
+        return userService.updatePassword(user);
     }
 
     @DeleteMapping(value = "/{username}")
@@ -69,7 +95,6 @@ public class UserController {
     }
 
     @GetMapping(value = "/me")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     @ApiOperation(value = "${UserController.me}", response = UserResponseDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Something went wrong"),

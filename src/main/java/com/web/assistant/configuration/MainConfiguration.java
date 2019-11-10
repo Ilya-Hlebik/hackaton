@@ -7,9 +7,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.List;
+
 @Configuration
 @PropertySource("classpath:swagger.properties")
-public class MainConfigConfig {
+public class MainConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
@@ -19,10 +21,16 @@ public class MainConfigConfig {
     public JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory();
     }
+
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         final RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         return template;
+    }
+
+    @Bean
+    public List<String> excludePatterns() {
+        return List.of("/users/signin", "/users/signup", "/users/update_pass");
     }
 }

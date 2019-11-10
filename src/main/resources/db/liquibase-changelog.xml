@@ -314,5 +314,8 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+       <sql>
+           UPDATE USER SET ACTIVE = 1;
+       </sql>
     </changeSet>
 </databaseChangeLog>

@@ -18,5 +18,6 @@ public class UserResponseDTO extends AbstractResponseDTO {
     private String username;
     @ApiModelProperty(position = 2)
     private String email;
+    private boolean active;
     private Worker worker;
 }

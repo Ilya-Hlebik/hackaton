@@ -13,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -20,31 +22,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final List<String> excludePatterns;
 
     @Override
     protected void configure(final HttpSecurity https) throws Exception {
 
-        // Disable CSRF (cross site request forgery)
         https.csrf().disable();
 
-        // No session will be created or used by spring security
         https.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        // Entry points
         https.authorizeRequests()
-                .antMatchers("/users/signin").permitAll()
-                .antMatchers("/users/signup").permitAll()
-                // Disallow everything else..
+                .antMatchers(excludePatterns.toArray(new String[0])).permitAll()
                 .anyRequest().authenticated();
 
-        // If a user try to access a resource without having enough permissions
         https.exceptionHandling().accessDeniedPage("/login");
 
-        // Apply JWT
-        https.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
-
-        // Optional, if you want to test the API from a browser
-        // http.httpBasic();
+        https.apply(new JwtTokenFilterConfigurer(jwtTokenProvider, excludePatterns));
     }
 
     @Override

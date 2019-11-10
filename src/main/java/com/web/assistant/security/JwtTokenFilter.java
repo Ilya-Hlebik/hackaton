@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.web.assistant.security.JwtTokenProvider.ACCESS_TOKEN;
@@ -24,11 +25,12 @@ import static com.web.assistant.security.JwtTokenProvider.ACCESS_TOKEN;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final List<String> excludePatterns;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest req, final HttpServletResponse res, final FilterChain filterChain) throws ServletException, IOException {
         final Map<String, String> tokens = jwtTokenProvider.resolveToken(req);
-        if (isUserWasLogedOut(req, tokens)) {
+        if (isUserWasLoggedOut(req, tokens)) {
             throw new SingInException("you was logged out", HttpStatus.METHOD_NOT_ALLOWED);
         }
         try {
@@ -51,7 +53,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
-    private boolean isUserWasLogedOut(final HttpServletRequest req, final Map<String, String> tokens) {
-        return !req.getServletPath().equals("/users/signin") && !req.getServletPath().equals("/users/signup") && jwtTokenProvider.inBLackList(tokens);
+    private boolean isUserWasLoggedOut(final HttpServletRequest req, final Map<String, String> tokens) {
+        return !excludePatterns.contains(req.getServletPath()) && jwtTokenProvider.inBLackList(tokens);
     }
 }
