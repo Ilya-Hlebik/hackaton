@@ -33,6 +33,11 @@ public class TempController {
     private final TechnologyRepository technologyRepository;
     private final ModelMapper modelMapper;
 
+    public static void main(final String[] args) {
+        for (int i = 0; i<100 ; i++)
+        System.out.println(new Random().nextInt(99));
+    }
+
     @GetMapping("/createOneAccount")
     @ApiOperation(value = "Create account", response = UserResponseDTO.class)
     @ApiResponses(value = {
@@ -50,8 +55,8 @@ public class TempController {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             final Worker worker = new Worker();
             worker.setUser(user);
-            worker.setName("Test worker_name" + new Random().nextInt());
-            worker.setSureName("Test worker_sureName" + new Random().nextInt());
+            worker.setName("name" + new Random().nextInt(99));
+            worker.setSureName("sureName" + new Random().nextInt(99));
             final List<Position> allPositions = positionRepository.findAll();
             final Position position = allPositions.get(new Random().nextInt(allPositions.size()));
             worker.setPositions(Collections.singletonList(position));
