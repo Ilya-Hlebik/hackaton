@@ -1,6 +1,7 @@
 package com.web.assistant.controller;
 
 import com.web.assistant.dbo.User;
+import com.web.assistant.dto.request.ForgotPasswordRequestDto;
 import com.web.assistant.dto.request.PasswordUpdateRequestDto;
 import com.web.assistant.dto.request.SignInRequestDTO;
 import com.web.assistant.dto.request.UserRequestDTO;
@@ -9,6 +10,7 @@ import com.web.assistant.service.UserService;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +45,7 @@ public class UserController {
             @ApiResponse(code = 422, message = "Username is already in use"),
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public UserResponseDTO signUp(@ApiParam("Signup User") @Valid @RequestBody final UserRequestDTO user) {
-        return userService.signUp(modelMapper.map(user, User.class),  true);
+        return userService.signUp(modelMapper.map(user, User.class), true);
     }
 
     @PostMapping("/create")
@@ -112,5 +114,15 @@ public class UserController {
             @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
     public void logOut(final HttpServletRequest req) {
         userService.logOut(req);
+    }
+
+    @PutMapping(value = "/update_pass/without_previous")
+    @ApiOperation(value = "${UserController.update_pass_without_previous}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "The user with this email doesn't exist oor you didn't activate account"),
+            @ApiResponse(code = 403, message = "Access denied"),
+            @ApiResponse(code = 500, message = "Expired or invalid JWT token")})
+    public ResponseEntity<UserResponseDTO> updatePassword(@ApiParam("Update Password") @Valid @RequestBody final ForgotPasswordRequestDto forgotPasswordRequestDto) {
+     return   userService.updatePassword(forgotPasswordRequestDto);
     }
 }

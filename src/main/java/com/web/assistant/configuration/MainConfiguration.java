@@ -4,13 +4,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 
 @Configuration
-@PropertySource("classpath:swagger.properties")
+@PropertySources({@PropertySource("classpath:swagger.properties"), @PropertySource("mail.properties")})
 public class MainConfiguration {
     @Bean
     public ModelMapper modelMapper() {
@@ -31,6 +32,7 @@ public class MainConfiguration {
 
     @Bean
     public List<String> excludePatterns() {
-        return List.of("/users/signin", "/users/signup", "/users/update_pass");
+        return List.of("/users/signin", "/users/signup", "/users/update_pass", "/mail/forgot_password", "/mail/verify_code"
+                , "/users/update_pass/without_previous");
     }
 }
