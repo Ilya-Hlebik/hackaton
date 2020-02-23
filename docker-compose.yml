@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8443:8443"
+    depends_on:
+      - db
+      - redis
+    links:
+      - redis
+      - db
+    environment:
+      - RHOST=redis
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hackhaton
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3307"
+  redis:
+    image: redis:4.0.5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    ports:
+      - "6379:6379"
