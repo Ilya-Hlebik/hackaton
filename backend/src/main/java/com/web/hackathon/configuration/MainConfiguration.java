@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.List;
 
 @Configuration
-@PropertySources({@PropertySource("classpath:swagger.properties"), @PropertySource("mail.properties")})
+@PropertySources({@PropertySource("swagger.properties"), @PropertySource("mail.properties")})
 public class MainConfiguration {
     @Bean
     public ModelMapper modelMapper() {
