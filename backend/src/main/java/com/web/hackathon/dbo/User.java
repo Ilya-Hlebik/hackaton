@@ -2,9 +2,7 @@ package com.web.hackathon.dbo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.web.hackathon.enumerated.Role;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,6 +13,8 @@ import java.util.List;
 @Table(name = "USER")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends AbstractEntity {
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -22,7 +22,7 @@ public class User extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    List<Role> roles;
+    private List<Role> roles;
     @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
     @Column(unique = true, nullable = false)
     private String username;

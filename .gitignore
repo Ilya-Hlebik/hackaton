@@ -36,3 +36,4 @@ build/
 /mvnw.cmd
 /log/
 /redis/
+/backend/log/application.log

@@ -6,6 +6,7 @@ import com.web.hackathon.dbo.User;
 import com.web.hackathon.dto.ForgotPasswordRequestDto;
 import com.web.hackathon.dto.PasswordUpdateRequestDto;
 import com.web.hackathon.dto.SignInRequestDTO;
+import com.web.hackathon.dto.SignUpRequestDTO;
 import com.web.hackathon.exception.CustomException;
 import com.web.hackathon.repository.AbstractRepository;
 import com.web.hackathon.repository.BlackListRepository;
@@ -72,11 +73,9 @@ public class UserService extends AbstractService<User> {
         }
     }
 
-    public User signUp(final User user, final boolean active) {
+    public User signUp(final SignUpRequestDTO user, final boolean active) {
         if (!((UserRepository) repository).existsByUsername(user.getUsername())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setActive(active);
-            return repository.save(user);
+            return repository.save(new User(user.getRoles(), user.getUsername(), user.getEmail(), passwordEncoder.encode(user.getPassword()), active));
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
