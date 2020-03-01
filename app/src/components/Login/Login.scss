@@ -1,0 +1,64 @@
+.login-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 500px;
+  margin: 10% auto;
+  height: 320px;
+  border-radius: 5px;
+  border: 1px solid #bdbbbb;
+
+  .login-title-box {
+    width: 100%;
+    margin-bottom: 20px;
+    hr {
+      background: #bdbbbb;
+      border: none;
+      height: 1px;
+      margin: 20px 0;
+    }
+    p {
+      color: grey;
+      font-size: 2rem;
+      text-align: left;
+      margin-left: 5%;
+    }
+  }
+  form {
+    width: 90%;
+  }
+  .Polaris-FormLayout__Item div {
+    display: flex;
+    .Polaris-TextField, .Polaris-Connected {
+      width: 100%;
+    }
+    .Polaris-Labelled__LabelWrapper {
+      display: flex;
+      align-items: center;
+      width: 100px;
+      label {
+        font-weight: 500;
+        font-size: 1.6rem;
+      }
+    }
+  }
+  .remember-me-box {
+    display: flex;
+  }
+  .submit-box {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 20px;
+    a {
+      color: #3097d1;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+}
